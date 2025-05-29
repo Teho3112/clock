@@ -1,147 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cyberpunk Clock</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%;
-      font-family: 'Orbitron', sans-serif;
-      background: url('https://images.unsplash.com/photo-1606107557195-d2b7c03d1b36?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
-      background-size: cover;
-      overflow: hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Cyberpunk Japanese Clock - Mobile Friendly</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #00ffe7;
-      position: relative;
-    }
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
 
-    #clock {
-      font-size: 10vw;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 1rem 2rem;
-      border-radius: 1rem;
-      text-align: center;
-      box-shadow: 0 0 25px #00ffe7;
-      z-index: 2;
-    }
+  body {
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-color: #000000;
+    color: #00FFD1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+  }
 
-    #controls {
-      margin-top: 20px;
-      z-index: 2;
-    }
+  body::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 0;
+  }
 
-    button {
-      font-family: 'Orbitron', sans-serif;
-      background: rgba(0, 0, 0, 0.7);
-      color: #00ffe7;
-      border: 2px solid #00ffe7;
-      padding: 0.6rem 1rem;
-      margin: 0 0.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
+  #clock {
+    font-size: clamp(3rem, 10vw, 10rem);
+    user-select: none;
+    letter-spacing: 0.25em;
+    position: relative;
+    z-index: 10;
+    text-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor,
+      0 0 40px currentColor;
+    animation: colorPulse 6s infinite alternate ease-in-out;
+    text-align: center;
+    width: 100%;
+  }
 
-    button:hover {
-      background-color: #00ffe7;
-      color: black;
-    }
+  #date {
+    font-size: clamp(1.2rem, 4vw, 3rem);
+    margin-top: 1rem;
+    user-select: none;
+    letter-spacing: 0.15em;
+    position: relative;
+    z-index: 10;
+    text-shadow:
+      0 0 6px currentColor,
+      0 0 15px currentColor;
+    text-align: center;
+    width: 100%;
+  }
 
-    .rain {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 1;
-    }
+  #weekday {
+    font-size: clamp(1rem, 3vw, 2rem);
+    margin-top: 0.3rem;
+    color: #ff33cc;
+    text-shadow:
+      0 0 8px #ff33cc,
+      0 0 20px #ff33cc;
+    user-select: none;
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    width: 100%;
+  }
 
-    .raindrop {
-      position: absolute;
-      width: 2px;
-      height: 20px;
-      background: #00ffe7;
-      animation: fall linear infinite;
-      opacity: 0.3;
-    }
+  /* Calendar styles */
 
-    @keyframes fall {
-      0% { transform: translateY(-100px); opacity: 0; }
-      100% { transform: translateY(100vh); opacity: 0.5; }
-    }
+  #calendar {
+    position: relative;
+    z-index: 10;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #00ffd1;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    color: #00ffd1;
+    width: 350px;
+    max-width: 100%;
+    box-shadow: 0 0 15px #00ffd1;
+    user-select: none;
+  }
 
-    @media (max-width: 768px) {
-      #clock { font-size: 16vw; }
-      button { font-size: 0.9rem; padding: 0.5rem 0.8rem; }
+  #calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  #calendar-header button {
+    background: none;
+    border: 1px solid #00ffd1;
+    color: #00ffd1;
+    padding: 0.2rem 0.7rem;
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  #calendar-header button:hover {
+    background-color: #00ffd1;
+    color: #000;
+  }
+
+  #calendar-month-year {
+    font-weight: 700;
+  }
+
+  #calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-weight: 600;
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    text-align: center;
+    margin-bottom: 0.3rem;
+  }
+
+  #calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.2rem;
+  }
+
+  #calendar-dates div {
+    text-align: center;
+    padding: 0.3rem 0;
+    border-radius: 4px;
+    cursor: default;
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    transition: background-color 0.25s ease;
+  }
+
+  #calendar-dates div.today {
+    background-color: #ff33cc;
+    color: black;
+    font-weight: 700;
+    box-shadow:
+      0 0 8px #ff33cc,
+      0 0 20px #ff33cc;
+  }
+
+  #calendar-dates div:hover:not(.today) {
+    background-color: #00ffd1;
+    color: black;
+  }
+
+  /* Rain */
+
+  .rain {
+    position: fixed;
+    top: -15vh;
+    width: 2px;
+    height: 25px;
+    background: linear-gradient(180deg, rgba(0,255,209,0.8), rgba(0,255,209,0));
+    filter: drop-shadow(0 0 3px currentColor);
+    animation-timing-function: linear;
+    animation-name: fall;
+    animation-iteration-count: infinite;
+    z-index: 5;
+    opacity: 0.5;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(110vh);
+      opacity: 0;
     }
-  </style>
+  }
+
+  /* Neon color pulse */
+
+  @keyframes colorPulse {
+    0% { color: #00ffd1; }
+    33% { color: #ff00ff; }
+    66% { color: #0066ff; }
+    100% { color: #00ffd1; }
+  }
+
+  /* Slight glitch effect on the clock (occasional) */
+
+  @keyframes glitchShift {
+    0%, 100% { text-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor,
+      0 0 40px currentColor; }
+    20% { text-shadow:
+      2px 0 red,
+      -2px 0 cyan,
+      2px 2px currentColor; }
+    40% { text-shadow:
+      -2px 0 cyan,
+      2px 0 red,
+      -2px -2px currentColor; }
+    60% { text-shadow:
+      3px 1px red,
+      -3px -1px cyan,
+      3px 3px currentColor; }
+    80% { text-shadow:
+      -3px -1px cyan,
+      3px 1px red,
+      -3px -3px currentColor; }
+  }
+</style>
 </head>
 <body>
+
   <div id="clock">00:00:00</div>
-  <div id="controls">
-    <button onclick="toggleFormat()">Switch to 12H</button>
-    <button onclick="toggleFullscreen()">Fullscreen</button>
+  <div id="date">January 1, 1970</div>
+  <div id="weekday">Monday</div>
+
+  <div id="calendar">
+    <div id="calendar-header">
+      <button id="prevMonth" aria-label="Previous month">&lt;</button>
+      <div id="calendar-month-year">January 1970</div>
+      <button id="nextMonth" aria-label="Next month">&gt;</button>
+    </div>
+    <div id="calendar-weekdays">
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div id="calendar-dates"></div>
   </div>
-  <div class="rain" id="rain"></div>
 
-  <script>
-    let is24Hour = true;
+<script>
+  const clockEl = document.getElementById('clock');
+  const dateEl = document.getElementById('date');
+  const weekdayEl = document.getElementById('weekday');
 
-    function updateClock() {
-      const now = new Date();
-      let hours = now.getHours();
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      let ampm = '';
+  // Clock & date update
+  const months = [
+    "January", "February", "March", "April",
+    "May", "June", "July", "August",
+    "September", "October", "November", "December"
+  ];
+  const weekdays = [
+    "Sunday", "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday"
+  ];
 
-      if (!is24Hour) {
-        ampm = hours >= 12 ? ' PM' : ' AM';
-        hours = hours % 12 || 12;
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours().toString().padStart(2, '0');
+    let m = now.getMinutes().toString().padStart(2, '0');
+    let s = now.getSeconds().toString().padStart(2, '0');
+    clockEl.textContent = `${h}:${m}:${s}`;
+
+    const day = now.getDate();
+    const month = months[now.getMonth()];
+    const year = now.getFullYear();
+    const weekday = weekdays[now.getDay()];
+    dateEl.textContent = `${day} ${month} ${year}`;
+    weekdayEl.textContent = weekday;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Calendar
+  const calendarMonthYear = document.getElementById('calendar-month-year');
+  const calendarDates = document.getElementById('calendar-dates');
+  const prevMonthBtn = document.getElementById('prevMonth');
+  const nextMonthBtn = document.getElementById('nextMonth');
+
+  let currentYear, currentMonth;
+
+  function renderCalendar(year, month) {
+    calendarMonthYear.textContent = `${months[month]} ${year}`;
+    calendarDates.innerHTML = '';
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+
+    // Empty slots for days before first day
+    for (let i = 0; i < firstDay; i++) {
+      const emptyCell = document.createElement('div');
+      calendarDates.appendChild(emptyCell);
+    }
+
+    // Days
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayCell = document.createElement('div');
+      dayCell.textContent = day;
+      if (
+        day === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        dayCell.classList.add('today');
       }
-
-      document.getElementById('clock').textContent = `${String(hours).padStart(2, '0')}:${minutes}:${seconds}${ampm}`;
+      calendarDates.appendChild(dayCell);
     }
+  }
 
-    function toggleFormat() {
-      is24Hour = !is24Hour;
-      document.querySelector('#controls button').textContent = is24Hour ? "Switch to 12H" : "Switch to 24H";
+  function updateCalendar(delta) {
+    currentMonth += delta;
+    if (currentMonth < 0) {
+      currentMonth = 11;
+      currentYear--;
+    } else if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear++;
     }
+    renderCalendar(currentYear, currentMonth);
+  }
 
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
-      } else {
-        document.exitFullscreen();
-      }
-    }
+  function initCalendar() {
+    const now = new Date();
+    currentYear = now.getFullYear();
+    currentMonth = now.getMonth();
+    renderCalendar(currentYear, currentMonth);
+  }
 
-    setInterval(updateClock, 1000);
-    updateClock();
+  prevMonthBtn.addEventListener('click', () => updateCalendar(-1));
+  nextMonthBtn.addEventListener('click', () => updateCalendar(1));
 
-    // Rain effect
-    const rainContainer = document.getElementById('rain');
-    const numDrops = 150;
+  initCalendar();
 
-    for (let i = 0; i < numDrops; i++) {
-      const drop = document.createElement('div');
-      drop.className = 'raindrop';
-      drop.style.left = `${Math.random() * 100}%`;
-      drop.style.animationDuration = `${0.5 + Math.random()}s`;
-      drop.style.animationDelay = `${Math.random()}s`;
-      drop.style.height = `${10 + Math.random() * 20}px`;
-      rainContainer.appendChild(drop);
-    }
-  </script>
+  // Rain effect
+  const rainCount = 150;
+  for(let i = 0; i < rainCount; i++) {
+    const drop = document.createElement('div');
+    drop.classList.add('rain');
+    drop.style.left = `${Math.random() * 100}vw`;
+    drop.style.animationDuration = `${0.7 + Math.random() * 0.8}s`;
+    drop.style.animationDelay = `${Math.random() * 5}s`;
+    drop.style.opacity = 0.3 + Math.random() * 0.5;
+    document.body.appendChild(drop);
+  }
+
+</script>
 </body>
 </html>
