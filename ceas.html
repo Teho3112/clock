@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cyberpunk Japanese Clock - Night with Rain and Effects</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Share Tech Mono', monospace;
+    height: 100vh;
+    background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-color: #000000;
+    color: #00FFD1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 0;
+  }
+
+  #clock {
+    font-size: 10rem;
+    user-select: none;
+    letter-spacing: 0.25em;
+    position: relative;
+    z-index: 10;
+    text-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor,
+      0 0 40px currentColor;
+    animation: colorPulse 6s infinite alternate ease-in-out;
+  }
+
+  #date {
+    font-size: 3rem;
+    margin-top: 20px;
+    user-select: none;
+    letter-spacing: 0.15em;
+    position: relative;
+    z-index: 10;
+    text-shadow:
+      0 0 6px currentColor,
+      0 0 15px currentColor;
+  }
+
+  #weekday {
+    font-size: 2rem;
+    margin-top: 5px;
+    color: #ff33cc;
+    text-shadow:
+      0 0 8px #ff33cc,
+      0 0 20px #ff33cc;
+    user-select: none;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Continuous rain */
+
+  .rain {
+    position: fixed;
+    top: -15vh;
+    width: 2px;
+    height: 25px;
+    background: linear-gradient(180deg, rgba(0,255,209,0.8), rgba(0,255,209,0));
+    filter: drop-shadow(0 0 3px currentColor);
+    animation-timing-function: linear;
+    animation-name: fall;
+    animation-iteration-count: infinite;
+    z-index: 5;
+    opacity: 0.5;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(110vh);
+      opacity: 0;
+    }
+  }
+
+  /* Neon color pulse */
+
+  @keyframes colorPulse {
+    0% { color: #00ffd1; }
+    33% { color: #ff00ff; }
+    66% { color: #0066ff; }
+    100% { color: #00ffd1; }
+  }
+
+  /* Slight glitch effect on the clock (occasional) */
+
+  @keyframes glitchShift {
+    0%, 100% { text-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor,
+      0 0 40px currentColor; }
+    20% { text-shadow:
+      2px 0 red,
+      -2px 0 cyan,
+      2px 2px currentColor; }
+    40% { text-shadow:
+      -2px 0 cyan,
+      2px 0 red,
+      -2px -2px currentColor; }
+    60% { text-shadow:
+      3px 1px red,
+      -3px -1px cyan,
+      3px 3px currentColor; }
+    80% { text-shadow:
+      -3px -1px cyan,
+      3px 1px red,
+      -3px -3px currentColor; }
+  }
+
+</style>
+</head>
+<body>
+
+  <div id="clock">00:00:00</div>
+  <div id="date">January 1, 1970</div>
+  <div id="weekday">Monday</div>
+
+  <audio id="rainSound" autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_1f1b2a6aa4.mp3?filename=rain-ambient-9612.mp3" type="audio/mpeg" />
+    Your browser does not support the audio element.
+  </audio>
+
+<script>
+  const months = [
+    "January", "February", "March", "April",
+    "May", "June", "July", "August",
+    "September", "October", "November", "December"
+  ];
+
+  const weekdays = [
+    "Sunday", "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday"
+  ];
+
+  const clockEl = document.getElementById('clock');
+  const dateEl = document.getElementById('date');
+  const weekdayEl = document.getElementById('weekday');
+  const rainSound = document.getElementById('rainSound');
+
+  function updateClock() {
+    const now = new Date();
+
+    let h = now.getHours().toString().padStart(2, '0');
+    let m = now.getMinutes().toString().padStart(2, '0');
+    let s = now.getSeconds().toString().padStart(2, '0');
+
+    clockEl.textContent = `${h}:${m}:${s}`;
+
+    const day = now.getDate();
+    const month = months[now.getMonth()];
+    const year = now.getFullYear();
+    const weekday = weekdays[now.getDay()];
+
+    dateEl.textContent = `${day} ${month} ${year}`;
+    weekdayEl.textContent = weekday;
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Create continuous rain
+  const rainCount = 150;
+  for(let i = 0; i < rainCount; i++) {
+    const drop = document.createElement('div');
+    drop.classList.add('rain');
+    drop.style.left = `${Math.random() * 100}vw`;
+    drop.style.animationDuration = `${0.7 + Math.random() * 0.8}s`;
+    drop.style.animationDelay = `${Math.random() * 5}s`;
+    drop.style.opacity = 0.3 + Math.random() * 0.5;
+    document.body.appendChild(drop);
+  }
+
+  rainSound.volume = 0.3;
+  rainSound.play().catch(() => {
+    document.body.addEventListener('click', () => rainSound.play());
+  });
+
+  // Occasional glitch effect on the clock, every 10-15 seconds
+  function glitchEffect() {
+    clockEl.style.animation = "glitchShift 0.4s ease-in-out";
+    setTimeout(() => {
+      clockEl.style.animation = "colorPulse 6s infinite alternate ease-in-out";
+    }, 400);
+  }
+
+  setInterval(() => {
+    if (Math.random() < 0.3) { // ~30% chance to activate glitch
+      glitchEffect();
+    }
+  }, 12000);
+</script>
+</body>
+</html>
